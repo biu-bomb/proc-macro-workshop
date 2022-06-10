@@ -2,6 +2,7 @@ mod common;
 mod solution2;
 mod solution3;
 mod solution45;
+mod solution6;
 
 #[proc_macro_derive(Builder)]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -32,6 +33,9 @@ fn solution1(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     // solution45
     let solution45_stream = solution45::solution(fields, builder_ident, origin_ident);
     token_stream.extend(solution45_stream);
+
+    // solution6
+    token_stream = solution6::solution(fields, builder_ident, origin_ident);
 
     proc_macro::TokenStream::from(token_stream)
 
