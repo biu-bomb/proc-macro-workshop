@@ -1,3 +1,5 @@
+use syn::spanned::Spanned;
+
 pub(crate) type FieldsType = syn::punctuated::Punctuated<syn::Field, syn::Token!(,)>;
 
 
@@ -20,22 +22,57 @@ pub(super) fn parse_fields(ast: &syn::DeriveInput) -> syn::Result<&FieldsType> {
 } 
 
 pub(crate) fn option_type(ty: &syn::Type) -> std::option::Option<&syn::Type> {
+    option_type_with_ident(ty, "Option".into())
+}
+
+pub(crate) fn each_method(field: &syn::Field) -> std::option::Option<syn::Ident> {
+    for attr in &field.attrs {
+        if let std::result::Result::Ok(
+            syn::Meta::List(
+                syn::MetaList {
+                    ref path,
+                    ref nested,
+                    ..
+                }
+            )
+        ) = attr.parse_meta() {
+            if let Some(p) = path.segments.first() {
+                if p.ident == "builder" {
+                    if let Some(
+                        syn::NestedMeta::Meta(
+                            syn::Meta::NameValue(kv)
+                        )
+                    ) = nested.first() {
+                        if kv.path.is_ident("each") {
+                            if let syn::Lit::Str(ref ident_str) = kv.lit {
+                                return std::option::Option::Some(
+                                    syn::Ident::new(ident_str.value().as_str(), attr.span())
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } 
+    std::option::Option::None
+}
+
+pub(crate) fn option_type_with_ident<'a>(ty: &'a syn::Type, ident:&str) -> std::option::Option<&'a syn::Type> {
     if let syn::Type::Path(
         syn::TypePath {
-            path: syn::Path{
-                segments,
-                ..
-            },
+            ref path,
             ..
-        }
+        } 
     ) = ty {
-        if let Some(seg) = segments.last() {
-            if seg.ident == "Option" {
+        if let std::option::Option::Some(seg) = path.segments.last() {
+            if seg.ident == ident {
                 if let syn::PathArguments::AngleBracketed(
-                    syn::AngleBracketedGenericArguments{
+                    syn::AngleBracketedGenericArguments {
                         ref args,
-                    ..
-                }) = seg.arguments {
+                        ..
+                    }
+                ) = seg.arguments {
                     if let Some(syn::GenericArgument::Type(inner_type)) = args.first() {
                         return std::option::Option::Some(inner_type);
                     }
