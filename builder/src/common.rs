@@ -82,3 +82,47 @@ pub(crate) fn option_type_with_ident<'a>(ty: &'a syn::Type, ident:&str) -> std::
     }
     std::option::Option::None
 }
+
+
+pub(crate) fn each_method_result(field: &syn::Field) -> syn::Result<std::option::Option<syn::Ident>> {
+    for attr in &field.attrs {
+        if let std::result::Result::Ok(
+            syn::Meta::List(
+                syn::MetaList {
+                    ref path,
+                    ref nested,
+                    ..
+                }
+            )
+        ) = attr.parse_meta() {
+            if let Some(p) = path.segments.first() {
+                if p.ident == "builder" {
+                    if let Some(
+                        syn::NestedMeta::Meta(
+                            syn::Meta::NameValue(kv)
+                        )
+                    ) = nested.first() {
+                        if kv.path.is_ident("each") {
+                            if let syn::Lit::Str(ref ident_str) = kv.lit {
+                                return syn::Result::Ok(
+                                    std::option::Option::Some(
+                                        syn::Ident::new(ident_str.value().as_str(), attr.span())
+                                    )
+                                );
+                            }
+                        } else {
+                            if let std::result::Result::Ok(
+                                syn::Meta::List(ref list)
+                            ) = attr.parse_meta() {
+                                return syn::Result::Err(
+                                    syn::Error::new_spanned(list, r#"expected `builder(each = "...")`"#)
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } 
+    syn::Result::Ok(std::option::Option::None)
+}

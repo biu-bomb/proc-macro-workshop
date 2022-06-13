@@ -4,6 +4,7 @@ mod solution3;
 mod solution45;
 mod solution6;
 mod solution7;
+mod solution8;
 
 #[proc_macro_derive(Builder, attributes(builder))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -36,10 +37,19 @@ fn solution1(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     token_stream.extend(solution45_stream);
 
     // solution6
-    token_stream = solution6::solution(fields, builder_ident, origin_ident);
+    _ = solution6::solution(fields, builder_ident, origin_ident);
 
     // solution7
-    token_stream = solution7::solution(fields, builder_ident, origin_ident);
+    _ = solution7::solution(fields, builder_ident, origin_ident);
+
+    match solution8::solution(fields, builder_ident, origin_ident) {
+        std::result::Result::Ok(res) => {
+            token_stream = res;
+        },
+        std::result::Result::Err(e) => {
+            return e.into_compile_error().into();
+        }
+    }
 
     proc_macro::TokenStream::from(token_stream)
 
