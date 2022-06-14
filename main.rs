@@ -6,15 +6,21 @@
 // To run the code:
 //     $ cargo run
 
-use derive_builder::Builder;
+use derive_debug::CustomDebug;
 
-#[derive(Builder)]
-struct Test {
-    name: String,
-    #[builder(each = "f")]
-    family: Vec<String>,
-    wife: Option<String>
+#[derive(CustomDebug)]
+pub struct Field {
+    name: &'static str,
+    bitmask: u8,
 }
 
+fn main() {
+    let f = Field {
+        name: "F",
+        bitmask: 0b00011100,
+    };
 
-fn main() {}
+    let debug = format!("{:?}", f);
+
+    assert!(debug.starts_with(r#"Field { name: "F","#));
+}
