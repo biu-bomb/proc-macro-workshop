@@ -1,8 +1,8 @@
 mod common;
 mod solution2;
+mod solution3;
 
-
-#[proc_macro_derive(CustomDebug)]
+#[proc_macro_derive(CustomDebug, attributes(debug))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let ast = syn::parse_macro_input!(input as syn::DeriveInput);
     match solution1(&ast) {
@@ -22,6 +22,8 @@ fn solution1(ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     // soluton2
     let solution2_stream = solution2::solution(fields, origin_ident)?;
     token_stream.extend(solution2_stream);
+
+    token_stream = solution3::solution(fields, origin_ident)?;
 
     syn::Result::Ok(token_stream)
 }
