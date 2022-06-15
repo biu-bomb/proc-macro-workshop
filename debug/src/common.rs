@@ -37,3 +37,7 @@ pub(crate) fn parse_format(field: &syn::Field) -> syn::Result<std::option::Optio
     }
     syn::Result::Ok(std::option::Option::None)
 }
+
+pub(crate) fn parse_generic_type(ast: &syn::DeriveInput) -> syn::Generics {
+    return ast.generics.clone();
+}
