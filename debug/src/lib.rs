@@ -2,6 +2,7 @@ mod common;
 mod solution2;
 mod solution3;
 mod solution4;
+mod solution5;
 
 #[proc_macro_derive(CustomDebug, attributes(debug))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -19,14 +20,14 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 fn solution1(ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     let origin_ident = &ast.ident;
     let fields = crate::common::parse_fields(&ast)?;
-    let mut token_stream = proc_macro2::TokenStream::new();
     // soluton2
-    let solution2_stream = solution2::solution(fields, origin_ident)?;
-    token_stream.extend(solution2_stream);
+    _ = solution2::solution(fields, origin_ident)?;
 
     _ = solution3::solution(fields, origin_ident)?;
 
-    token_stream = solution4::solution(fields, origin_ident, ast)?;
+    _ = solution4::solution(fields, origin_ident, ast)?;
+
+    let token_stream = solution5::solution(fields, origin_ident, ast)?;
 
     syn::Result::Ok(token_stream)
 }

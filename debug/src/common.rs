@@ -41,3 +41,72 @@ pub(crate) fn parse_format(field: &syn::Field) -> syn::Result<std::option::Optio
 pub(crate) fn parse_generic_type(ast: &syn::DeriveInput) -> syn::Generics {
     return ast.generics.clone();
 }
+
+pub(crate) fn parse_phantom_generic_type_name(field: &syn::Field) -> syn::Result<std::option::Option<std::string::String>> {
+    if let syn::Type::Path(
+        syn::TypePath {
+            path: syn::Path {
+                ref segments,
+                ..
+            },
+            ..
+        }
+    ) = field.ty {
+        if let std::option::Option::Some(
+            syn::PathSegment {
+                ref ident,
+                ref arguments,
+                ..
+            }
+        ) = segments.last() {
+            if ident == "PhantomData" {
+                if let syn::PathArguments::AngleBracketed(
+                    syn::AngleBracketedGenericArguments {
+                        ref args,
+                        ..
+                    }
+                ) = arguments {
+                    if let std::option::Option::Some(
+                        syn::GenericArgument::Type(
+                            syn::Type::Path(p)
+                        )
+                    ) = args.first() {
+                        if let std::option::Option::Some(gp) = p.path.segments.first() {
+                            return syn::Result::Ok(
+                                std::option::Option::Some(
+                                    gp.ident.to_string()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    syn::Result::Ok(std::option::Option::None)
+}
+
+pub(crate) fn parse_field_type_name(field: &syn::Field) -> syn::Result<std::option::Option<std::string::String>> {
+    if let syn::Type::Path(
+        syn::TypePath {
+            path: syn::Path {
+                ref segments,
+                ..
+            },
+            ..
+        }
+    ) = field.ty {
+        if let std::option::Option::Some(
+            syn::PathSegment {
+                ref ident,
+                ..
+            }
+        ) = segments.last() {
+            return syn::Result::Ok(
+                std::option::Option::Some(ident.to_string())
+            )
+        }
+    }
+    syn::Result::Ok(std::option::Option::None)
+}
