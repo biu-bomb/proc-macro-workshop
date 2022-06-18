@@ -1,3 +1,5 @@
+use syn::visit::Visit;
+
 pub(crate) type FielsType = syn::punctuated::Punctuated<syn::Field, syn::Token!(,)>;
 
 pub(crate) fn parse_fields(ast: &syn::DeriveInput) -> syn::Result<&FielsType> {
@@ -109,4 +111,39 @@ pub(crate) fn parse_field_type_name(field: &syn::Field) -> syn::Result<std::opti
         }
     }
     syn::Result::Ok(std::option::Option::None)
+}
+
+struct TypePathVisitor {
+    interst_generic_type_names: Vec<String>,
+    associated_type_names: std::collections::HashMap<String, Vec<syn::TypePath>>
+}
+
+impl <'ast> syn::visit::Visit<'ast> for TypePathVisitor {
+    fn visit_type_path(&mut self, node: &'ast syn::TypePath) {
+        if node.path.segments.len() > 1 {
+            let generic_type_name = node.path.segments[0].ident.to_string();
+            if self.interst_generic_type_names.contains(&generic_type_name) {
+                self.associated_type_names
+                .entry(generic_type_name)
+                .or_insert(vec![])
+                .push(node.clone());
+            }
+        }
+        syn::visit::visit_type_path(self, node);
+    }
+}
+
+pub(crate) fn parse_generic_associated_types(ast: &syn::DeriveInput) -> std::collections::HashMap<String, Vec<syn::TypePath>> {
+    let origin_generic_type_names: Vec<String> = ast.generics.params.iter().filter_map(|f|{
+        if let syn::GenericParam::Type(t) = f {
+            return Some(t.ident.to_string());
+        }
+        return None;
+    }).collect();
+    let mut visitor = TypePathVisitor {
+        interst_generic_type_names: origin_generic_type_names,
+        associated_type_names: std::collections::HashMap::new()
+    };
+    visitor.visit_derive_input(ast);
+    return visitor.associated_type_names;
 }
