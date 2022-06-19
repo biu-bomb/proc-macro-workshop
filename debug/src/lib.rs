@@ -4,6 +4,7 @@ mod solution3;
 mod solution4;
 mod solution56;
 mod solution7;
+mod solution8;
 
 #[proc_macro_derive(CustomDebug, attributes(debug))]
 pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -30,7 +31,9 @@ fn solution1(ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
 
     _ = solution56::solution(fields, origin_ident, ast)?;
 
-    let token_stream = solution7::soution(fields, origin_ident, ast)?;
+    _ = solution7::soution(fields, origin_ident, ast)?;
+
+    let token_stream = solution8::solution(fields, origin_ident, ast)?;
 
     syn::Result::Ok(token_stream)
 }

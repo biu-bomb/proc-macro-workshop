@@ -1,8 +1,8 @@
 use syn::visit::Visit;
 
-pub(crate) type FielsType = syn::punctuated::Punctuated<syn::Field, syn::Token!(,)>;
+pub(crate) type FieldsType = syn::punctuated::Punctuated<syn::Field, syn::Token!(,)>;
 
-pub(crate) fn parse_fields(ast: &syn::DeriveInput) -> syn::Result<&FielsType> {
+pub(crate) fn parse_fields(ast: &syn::DeriveInput) -> syn::Result<&FieldsType> {
     if let syn::Data::Struct(
         syn::DataStruct {
             fields: syn::Fields::Named(
@@ -147,3 +147,41 @@ pub(crate) fn parse_generic_associated_types(ast: &syn::DeriveInput) -> std::col
     visitor.visit_derive_input(ast);
     return visitor.associated_type_names;
 }
+
+
+pub(crate) fn parse_customer_debug(ast: &syn::DeriveInput) -> syn::Result<std::option::Option<std::string::String>> {
+    for attr in ast.attrs.iter() {
+        if let syn::Result::Ok(
+            syn::Meta::List(
+                syn::MetaList {
+                    ref path,
+                    ref nested,
+                    ..
+                }
+            )
+        ) = attr.parse_meta() {
+            if path.is_ident("debug") {
+                if let std::option::Option::Some(
+                    syn::NestedMeta::Meta(
+                        syn::Meta::NameValue(
+                            syn::MetaNameValue {
+                                ref path,
+                                ref lit,
+                                ..
+                            }
+                        )
+                    )
+                ) = nested.first() {
+                    if path.is_ident("bound") {
+                        if let syn::Lit::Str(ref customer_where_clause) = lit {
+                            return syn::Result::Ok(std::option::Option::Some(customer_where_clause.value().to_string()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    syn::Result::Ok(std::option::Option::None)
+}
+
+

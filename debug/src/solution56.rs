@@ -1,4 +1,4 @@
-pub(super) fn solution(fields: &crate::common::FielsType, origin_ident: &syn::Ident, ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
+pub(super) fn solution(fields: &crate::common::FieldsType, origin_ident: &syn::Ident, ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
 
     let mut generics = crate::common::parse_generic_type(ast);
     let mut fields_type_names = vec![];
@@ -40,7 +40,7 @@ pub(super) fn solution(fields: &crate::common::FielsType, origin_ident: &syn::Id
 }
 
 
-fn generate_field_stream_vec(fields: &crate::common::FielsType) -> syn::Result<Vec<proc_macro2::TokenStream>> {
+fn generate_field_stream_vec(fields: &crate::common::FieldsType) -> syn::Result<Vec<proc_macro2::TokenStream>> {
     fields.iter().map(|f| {
         let ident = &f.ident;
         let ident_string = ident.as_ref().unwrap().to_string();

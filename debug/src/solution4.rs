@@ -1,6 +1,6 @@
 
 
-pub(super) fn solution(fields: &crate::common::FielsType, origin_ident: &syn::Ident, ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
+pub(super) fn solution(fields: &crate::common::FieldsType, origin_ident: &syn::Ident, ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     let mut generic = crate::common::parse_generic_type(ast);
     for g in generic.params.iter_mut() {
         if let syn::GenericParam::Type(t) = g {
@@ -26,7 +26,7 @@ pub(super) fn solution(fields: &crate::common::FielsType, origin_ident: &syn::Id
 }
 
 
-fn debug_body_vec(fields: &crate::common::FielsType) -> syn::Result<Vec<proc_macro2::TokenStream>> {
+fn debug_body_vec(fields: &crate::common::FieldsType) -> syn::Result<Vec<proc_macro2::TokenStream>> {
     fields.iter().map(|f|{
         let ident = &f.ident;
         let ident_string = ident.as_ref().unwrap().to_string();

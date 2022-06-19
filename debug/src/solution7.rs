@@ -1,4 +1,4 @@
-pub(super) fn soution(fields: &crate::common::FielsType, origin_ident: &syn::Ident, ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
+pub(super) fn soution(fields: &crate::common::FieldsType, origin_ident: &syn::Ident, ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
 
     let mut origin_field_type_names = vec![];
     let mut phantom_generic_type_names = vec![];
@@ -55,7 +55,7 @@ pub(super) fn soution(fields: &crate::common::FielsType, origin_ident: &syn::Ide
 }
 
 
-fn generate_field_stream_vec(fields: &crate::common::FielsType) -> syn::Result<Vec<proc_macro2::TokenStream>> {
+fn generate_field_stream_vec(fields: &crate::common::FieldsType) -> syn::Result<Vec<proc_macro2::TokenStream>> {
     fields.iter().map(|f| {
         let ident = &f.ident;
         let ident_string = ident.as_ref().unwrap().to_string();

@@ -1,4 +1,4 @@
-pub(super) fn solution(fields: &crate::common::FielsType, origin_ident: &syn::Ident) -> syn::Result<proc_macro2::TokenStream> {
+pub(super) fn solution(fields: &crate::common::FieldsType, origin_ident: &syn::Ident) -> syn::Result<proc_macro2::TokenStream> {
     let field_stream_vec: Vec<_> = fields.iter().map(|f| {
         let ident = &f.ident.as_ref();
         let ident_string = ident.unwrap().to_string();
