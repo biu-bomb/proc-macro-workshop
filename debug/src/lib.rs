@@ -23,15 +23,15 @@ fn solution1(ast: &syn::DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
     let origin_ident = &ast.ident;
     let fields = crate::common::parse_fields(&ast)?;
     // soluton2
-    _ = solution2::solution(fields, origin_ident)?;
+    let _ = solution2::solution(fields, origin_ident)?;
 
-    _ = solution3::solution(fields, origin_ident)?;
+    let _ = solution3::solution(fields, origin_ident)?;
 
-    _ = solution4::solution(fields, origin_ident, ast)?;
+    let _ = solution4::solution(fields, origin_ident, ast)?;
 
-    _ = solution56::solution(fields, origin_ident, ast)?;
+    let _ = solution56::solution(fields, origin_ident, ast)?;
 
-    _ = solution7::soution(fields, origin_ident, ast)?;
+    let _ = solution7::soution(fields, origin_ident, ast)?;
 
     let token_stream = solution8::solution(fields, origin_ident, ast)?;
 

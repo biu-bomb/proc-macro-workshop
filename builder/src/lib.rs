@@ -37,10 +37,10 @@ fn solution1(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     token_stream.extend(solution45_stream);
 
     // solution6
-    _ = solution6::solution(fields, builder_ident, origin_ident);
+    let _ = solution6::solution(fields, builder_ident, origin_ident);
 
     // solution7
-    _ = solution7::solution(fields, builder_ident, origin_ident);
+    let _ = solution7::solution(fields, builder_ident, origin_ident);
 
     match solution8::solution(fields, builder_ident, origin_ident) {
         std::result::Result::Ok(res) => {

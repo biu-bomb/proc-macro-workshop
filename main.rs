@@ -6,27 +6,41 @@
 // To run the code:
 //     $ cargo run
 
-use derive_debug::CustomDebug;
-use std::fmt::Debug;
-
-pub trait Trait {
-    type Value;
+use seq::seq;
+// 传入某个宏，处理256
+macro_rules! pass_nproc {
+    ($mac:ident) => {
+        $mac! { 256 }
+    };
 }
 
-#[derive(CustomDebug)]
-pub struct Field<T: Trait> {
-    values: Vec<T::Value>,
+// 直接返回传入的字面量
+macro_rules! literal_identity_macro {
+    ($nproc:literal) => {
+        $nproc
+    };
 }
 
-fn assert_debug<F: Debug>() {}
+// Expands to: `const NPROC: usize = 256;`
+// 处理某个宏，展开后返回一个定义的字面量
+const NPROC: usize = pass_nproc!(literal_identity_macro);
 
-fn main() {
-    // Does not implement Debug, but its associated type does.
-    struct Id;
+struct Proc;
 
-    impl Trait for Id {
-        type Value = u8;
+impl Proc {
+    const fn new() -> Self {
+        Proc
     }
-
-    assert_debug::<Field<Id>>();
 }
+
+// 传入某个字面量，然后进行宏展开
+macro_rules! make_procs_array {
+    ($nproc:literal) => {
+        seq!(N in 0..$nproc { [#(Proc::new(),)*] })
+    }
+}
+
+// Expands to: `static PROCS: [Proc; NPROC] = [Proc::new(), ..., Proc::new()];`
+static PROCS: [Proc; NPROC] = pass_nproc!(make_procs_array);
+
+fn main() {}
