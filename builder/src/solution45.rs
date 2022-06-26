@@ -1,4 +1,8 @@
-pub(super) fn solution(fields: &crate::common::FieldsType, builder_ident: &syn::Ident, origin_ident: &syn::Ident) -> proc_macro2::TokenStream {
+pub(super) fn solution(
+    fields: &crate::common::FieldsType,
+    builder_ident: &syn::Ident,
+    origin_ident: &syn::Ident,
+) -> proc_macro2::TokenStream {
     let idents: Vec<_> = fields.iter().map(|f| &f.ident).collect();
     quote::quote! {
         impl #builder_ident {

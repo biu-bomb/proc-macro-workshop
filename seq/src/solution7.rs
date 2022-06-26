@@ -1,4 +1,4 @@
-pub(crate) fn parse_range(input: &syn::parse::ParseStream) -> syn::Result<(usize, usize)>{
+pub(crate) fn parse_range(input: &syn::parse::ParseStream) -> syn::Result<(usize, usize)> {
     let begin = input.parse::<syn::LitInt>()?.base10_parse()?;
     let _ = input.parse::<syn::Token!(..)>()?;
     let mut incude_grater = false;

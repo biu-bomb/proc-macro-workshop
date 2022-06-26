@@ -16,15 +16,15 @@ fn solution1(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let fields = {
         match common::parse_fields(&ast) {
             Ok(f) => f,
-            Err(_e) => std::panic!(std::stringify!(_e))
+            Err(_e) => std::panic!(std::stringify!(_e)),
         }
     };
-    
+
     let origin_ident = &ast.ident;
     let builder_ident = &quote::format_ident!("{}Builder", origin_ident);
     let mut token_stream = proc_macro2::TokenStream::new();
 
-    // solution2 
+    // solution2
     let solution2_stream = solution2::solution(fields, origin_ident, builder_ident);
     token_stream.extend(solution2_stream);
 
@@ -45,15 +45,11 @@ fn solution1(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     match solution8::solution(fields, builder_ident, origin_ident) {
         std::result::Result::Ok(res) => {
             token_stream = res;
-        },
+        }
         std::result::Result::Err(e) => {
             return e.into_compile_error().into();
         }
     }
 
     proc_macro::TokenStream::from(token_stream)
-
-
-
-
 }

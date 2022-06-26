@@ -5,7 +5,6 @@ mod solution4;
 mod solution56;
 mod solution7;
 
-
 #[proc_macro]
 pub fn seq(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let parser = syn::parse_macro_input!(input as crate::parser::SeqParser);
@@ -14,4 +13,3 @@ pub fn seq(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     }
     return parser.expend_repeat().into();
 }
-

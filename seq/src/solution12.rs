@@ -6,13 +6,11 @@ impl syn::parse::Parse for crate::parser::SeqParser {
         let body_buf;
         let _ = syn::braced!(body_buf in input);
         let body = body_buf.parse::<proc_macro2::TokenStream>()?;
-        syn::Result::Ok(
-            crate::parser::SeqParser {
-                variable_ident,
-                begin,
-                end,
-                body
-            }
-        )
+        syn::Result::Ok(crate::parser::SeqParser {
+            variable_ident,
+            begin,
+            end,
+            body,
+        })
     }
 }

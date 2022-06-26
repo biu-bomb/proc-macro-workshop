@@ -1,5 +1,4 @@
 impl crate::parser::SeqParser {
-
     pub(crate) fn expand_section(&self) -> std::option::Option<proc_macro2::TokenStream> {
         let buffer = syn::buffer::TokenBuffer::new2(self.body.clone());
         let (expended, expend_section_stream) = self.do_expand_section(buffer.begin());
@@ -9,15 +8,19 @@ impl crate::parser::SeqParser {
         std::option::Option::None
     }
 
-
-    pub(crate) fn do_expand_section(&self, origin_cursor: syn::buffer::Cursor) -> (bool, proc_macro2::TokenStream) {
+    pub(crate) fn do_expand_section(
+        &self,
+        origin_cursor: syn::buffer::Cursor,
+    ) -> (bool, proc_macro2::TokenStream) {
         let mut found = false;
         let mut res = proc_macro2::TokenStream::new();
         let mut cursor = origin_cursor;
         while !cursor.eof() {
             if let Some((prefix, prefix_next_cursor)) = cursor.punct() {
                 if prefix.as_char() == '#' {
-                    if let Some((group_cursor, _, group_next_cursor)) = prefix_next_cursor.group(proc_macro2::Delimiter::Parenthesis) {
+                    if let Some((group_cursor, _, group_next_cursor)) =
+                        prefix_next_cursor.group(proc_macro2::Delimiter::Parenthesis)
+                    {
                         if let Some((suffix, suffix_next_cursor)) = group_next_cursor.punct() {
                             if suffix.as_char() == '*' {
                                 for i in self.begin..self.end {
@@ -32,19 +35,25 @@ impl crate::parser::SeqParser {
                     }
                 }
             }
-            if let Some((group_cursor, _, group_next_cursor)) = cursor.group(proc_macro2::Delimiter::Brace) {
+            if let Some((group_cursor, _, group_next_cursor)) =
+                cursor.group(proc_macro2::Delimiter::Brace)
+            {
                 let (sub_found, sub_stream) = self.do_expand_section(group_cursor);
                 found = sub_found;
                 res.extend(quote::quote!({#sub_stream}));
                 cursor = group_next_cursor;
                 continue;
-            } else if let Some((group_cursor, _, group_next_cursor)) = cursor.group(proc_macro2::Delimiter::Bracket) {
+            } else if let Some((group_cursor, _, group_next_cursor)) =
+                cursor.group(proc_macro2::Delimiter::Bracket)
+            {
                 let (sub_found, sub_stream) = self.do_expand_section(group_cursor);
                 found = sub_found;
                 res.extend(quote::quote!([#sub_stream]));
                 cursor = group_next_cursor;
                 continue;
-            } else if let Some((group_cursor, _, group_next_cursor)) = cursor.group(proc_macro2::Delimiter::Parenthesis) {
+            } else if let Some((group_cursor, _, group_next_cursor)) =
+                cursor.group(proc_macro2::Delimiter::Parenthesis)
+            {
                 let (sub_found, sub_stream) = self.do_expand_section(group_cursor);
                 found = sub_found;
                 res.extend(quote::quote!((#sub_stream)));
@@ -66,7 +75,7 @@ impl crate::parser::SeqParser {
                 res.extend(quote::quote!(#lifetime));
                 cursor = next;
                 continue;
-            } 
+            }
         }
         (found, res)
     }

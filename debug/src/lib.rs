@@ -12,7 +12,7 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     match solution1(&ast) {
         syn::Result::Ok(token_stream) => {
             return proc_macro::TokenStream::from(token_stream);
-        },
+        }
         syn::Result::Err(e) => {
             return e.into_compile_error().into();
         }

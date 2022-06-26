@@ -6,41 +6,28 @@
 // To run the code:
 //     $ cargo run
 
-use seq::seq;
-// 传入某个宏，处理256
-macro_rules! pass_nproc {
-    ($mac:ident) => {
-        $mac! { 256 }
-    };
+use sorted::sorted;
+
+use std::fmt::{self, Display};
+use std::io;
+
+#[sorted]
+pub enum Error {
+    Fmt(fmt::Error),
+    Io(io::Error),
 }
 
-// 直接返回传入的字面量
-macro_rules! literal_identity_macro {
-    ($nproc:literal) => {
-        $nproc
-    };
-}
+impl Display for Error {
+    #[sorted::check]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Error::*;
 
-// Expands to: `const NPROC: usize = 256;`
-// 处理某个宏，展开后返回一个定义的字面量
-const NPROC: usize = pass_nproc!(literal_identity_macro);
-
-struct Proc;
-
-impl Proc {
-    const fn new() -> Self {
-        Proc
+        #[sorted::sorted]
+        match self {
+            Io(e) => write!(f, "{}", e),
+            Fmt(e) => write!(f, "{}", e),
+        }
     }
 }
-
-// 传入某个字面量，然后进行宏展开
-macro_rules! make_procs_array {
-    ($nproc:literal) => {
-        seq!(N in 0..$nproc { [#(Proc::new(),)*] })
-    }
-}
-
-// Expands to: `static PROCS: [Proc; NPROC] = [Proc::new(), ..., Proc::new()];`
-static PROCS: [Proc; NPROC] = pass_nproc!(make_procs_array);
 
 fn main() {}
